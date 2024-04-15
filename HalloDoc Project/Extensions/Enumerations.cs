@@ -43,6 +43,7 @@ namespace HalloDoc_Project.Extensions
             Patient = 2,
             Physician = 3
         }
+        
 
     }
 }

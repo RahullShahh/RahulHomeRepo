@@ -76,10 +76,10 @@ namespace BAL.Repository
                 //change the fname, lname , and contact detials acc to the requestor
                 request.Requesttypeid = 3;
                 request.Userid = user_obj.Userid;  //
-                request.Firstname = fmfr.firstName;
-                request.Lastname = fmfr.lastName;
+                request.Firstname = fmfr.FirstName;
+                request.Lastname = fmfr.LastName;
                 request.Phonenumber = FriendFamilyPhoneNo;
-                request.Email = fmfr.email;
+                request.Email = fmfr.Email;
                 request.Createddate = DateTime.Now;
                 request.Patientaccountid = id;  //
                 request.Status = 1;
@@ -138,10 +138,10 @@ namespace BAL.Repository
                     //change the fname, lname , and contact detials acc to the requestor
                     request.Requesttypeid = 3;
                     request.Userid = userdata.Userid;
-                    request.Firstname = fmfr.firstName;
-                    request.Lastname = fmfr.lastName;
+                    request.Firstname = fmfr.FirstName;
+                    request.Lastname = fmfr.LastName;
                     request.Phonenumber = FriendFamilyPhoneNo;
-                    request.Email = fmfr.email;
+                    request.Email = fmfr.Email;
                     request.Createddate = DateTime.Now;
                     request.Patientaccountid = userdata.Aspnetuserid;
                     request.Status = 1;
@@ -192,10 +192,10 @@ namespace BAL.Repository
         }
         public void CRequest(ConciergeModel cm, string SetUpLink)
         {
-            bool userExists = _context.Users.Any(PatientData => PatientData.Email == cm.PtEmail);
+            bool userExists = _context.Users.Any(PatientData => PatientData.Email == cm.PatientEmail);
             string PatientPhoneNumber = "+" + cm.PatientCountryCode + "-" + cm.PatientPhoneNo;
             string ConciergePhoneNo = "+" + cm.ConciergeCountryCode + "-" + cm.ConciergePhoneNo;
-            var StateName = _context.Regions.FirstOrDefault(region => region.Regionid == cm.ConState)?.Name;
+            var StateName = _context.Regions.FirstOrDefault(region => region.Regionid == cm.ConciergeState)?.Name;
 
             if (!userExists)
             {
@@ -203,9 +203,9 @@ namespace BAL.Repository
 
                 string id = Guid.NewGuid().ToString();
                 user.Id = id;
-                user.Email = cm.PtEmail;
+                user.Email = cm.PatientEmail;
                 user.Phonenumber = cm.PatientPhoneNo;
-                user.Username = cm.PtEmail;
+                user.Username = cm.PatientEmail;
                 user.Createddate = DateTime.Now;
                 user.Phonenumber = PatientPhoneNumber;
                 _context.Aspnetusers.Add(user);
@@ -213,17 +213,17 @@ namespace BAL.Repository
 
                 User user_obj = new User();
                 user_obj.Aspnetuserid = user.Id;
-                user_obj.Firstname = cm.PtFirstName;
-                user_obj.Lastname = cm.PtLastName;
-                user_obj.Email = cm.PtEmail;
+                user_obj.Firstname = cm.PatientFirstName;
+                user_obj.Lastname = cm.PatientLastName;
+                user_obj.Email = cm.PatientEmail;
                 user_obj.Mobile = cm.PatientPhoneNo;
-                user_obj.Street = cm.ConStreet;
-                user_obj.City = cm.ConCity;
+                user_obj.Street = cm.ConciergeStreet;
+                user_obj.City = cm.ConciergeCity;
                 user_obj.State = StateName;
-                user_obj.Zipcode = cm.ConZipCode;
+                user_obj.Zipcode = cm.ConciergeZipCode;
                 user_obj.Createddate = DateTime.Now;
                 user_obj.Createdby = id;
-                user_obj.Regionid = cm.ConState;
+                user_obj.Regionid = cm.ConciergeState;
                 user_obj.Mobile = PatientPhoneNumber;
                 user_obj.Intyear = cm.PatientDateOfBirth?.Year;
                 user_obj.Intdate = cm.PatientDateOfBirth?.Day;
@@ -233,14 +233,14 @@ namespace BAL.Repository
 
                 Concierge conciergeData = new()
                 {
-                    Conciergename = cm.ConFirstName + cm.ConLastName,
-                    Street = cm.ConStreet,
-                    City = cm.ConCity,
+                    Conciergename = cm.ConciergeFirstName + cm.ConciergeLastName,
+                    Street = cm.ConciergeStreet,
+                    City = cm.ConciergeCity,
                     State = StateName,
-                    Zipcode = cm.ConZipCode,
+                    Zipcode = cm.ConciergeZipCode,
                     Createddate = DateTime.Now,
-                    Address = cm.ConStreet + " " + cm.ConCity + " " + cm.ConState + " " + cm.ConZipCode,
-                    Regionid = cm.ConState
+                    Address = cm.ConciergeStreet + " " + cm.ConciergeCity + " " + cm.ConciergeState + " " + cm.ConciergeZipCode,
+                    Regionid = cm.ConciergeState
                 };
                 _context.Concierges.Add(conciergeData);
                 _context.SaveChanges();
@@ -249,9 +249,9 @@ namespace BAL.Repository
                 //change the fname, lname , and contact detials acc to the requestor
                 req.Requesttypeid = 4;
                 req.Userid = user_obj.Userid;
-                req.Firstname = cm.ConFirstName;
-                req.Lastname = cm.ConLastName;
-                req.Email = cm.ConEmail;
+                req.Firstname = cm.ConciergeFirstName;
+                req.Lastname = cm.ConciergeLastName;
+                req.Email = cm.ConciergeEmail;
                 req.Createddate = DateTime.Now;
                 req.Patientaccountid = id;
                 req.Status = 1;
@@ -272,18 +272,18 @@ namespace BAL.Repository
 
                 Requestclient rc = new Requestclient();
                 rc.Requestid = req.Requestid;
-                rc.Firstname = cm.PtFirstName;
-                rc.Lastname = cm.PtLastName;
+                rc.Firstname = cm.PatientFirstName;
+                rc.Lastname = cm.PatientLastName;
                 rc.Phonenumber = cm.PatientPhoneNo;
-                rc.Location = cm.ConCity + StateName;
-                rc.Email = cm.PtEmail;
-                rc.Address = cm.PtRoomSuite + ", " + cm.ConStreet + ", " + cm.ConCity + ", " + cm.ConState + ", " + cm.ConZipCode;
-                rc.Street = cm.ConStreet;
-                rc.City = cm.ConCity;
+                rc.Location = cm.ConciergeCity + StateName;
+                rc.Email = cm.PatientEmail;
+                rc.Address = cm.PatientRoomNo + ", " + cm.ConciergeStreet + ", " + cm.ConciergeCity + ", " + cm.ConciergeState + ", " + cm.ConciergeZipCode;
+                rc.Street = cm.ConciergeStreet;
+                rc.City = cm.ConciergeCity;
                 rc.State = StateName;
-                rc.Zipcode = cm.ConZipCode;
-                rc.Notes = cm.PtSymptoms;
-                rc.Regionid = cm.ConState;
+                rc.Zipcode = cm.ConciergeZipCode;
+                rc.Notes = cm.PatientSymptoms;
+                rc.Regionid = cm.ConciergeState;
                 rc.Intdate = cm.PatientDateOfBirth?.Day;
                 rc.Strmonth = cm.PatientDateOfBirth?.Month.ToString();
                 rc.Intyear = cm.PatientDateOfBirth?.Year;
@@ -296,19 +296,19 @@ namespace BAL.Repository
             }
             else
             {
-                User? userdata = _context.Users.FirstOrDefault(user => user.Email == cm.PtEmail);
+                User? userdata = _context.Users.FirstOrDefault(user => user.Email == cm.PatientEmail);
                 if (userdata != null)
                 {
                     Concierge conciergeData = new()
                     {
-                        Conciergename = cm.ConFirstName + cm.ConLastName,
-                        Street = cm.ConStreet,
-                        City = cm.ConCity,
+                        Conciergename = cm.ConciergeFirstName + cm.ConciergeLastName,
+                        Street = cm.ConciergeStreet,
+                        City = cm.ConciergeCity,
                         State = StateName,
-                        Zipcode = cm.ConZipCode,
+                        Zipcode = cm.ConciergeZipCode,
                         Createddate = DateTime.Now,
-                        Address = cm.ConStreet + " " + cm.ConCity + " " + cm.ConState + " " + cm.ConZipCode,
-                        Regionid = cm.ConState
+                        Address = cm.ConciergeStreet + " " + cm.ConciergeCity + " " + cm.ConciergeState + " " + cm.ConciergeZipCode,
+                        Regionid = cm.ConciergeState
                     };
                     _context.Concierges.Add(conciergeData);
                     _context.SaveChanges();
@@ -316,9 +316,9 @@ namespace BAL.Repository
                     Request req = new Request();
                     //change the fname, lname , and contact detials acc to the requestor
                     req.Requesttypeid = 4;
-                    req.Firstname = cm.ConFirstName;
-                    req.Lastname = cm.ConLastName;
-                    req.Email = cm.ConEmail;
+                    req.Firstname = cm.ConciergeFirstName;
+                    req.Lastname = cm.ConciergeLastName;
+                    req.Email = cm.ConciergeEmail;
                     req.Createddate = DateTime.Now;
                     req.Status = 1;
                     req.Phonenumber = ConciergePhoneNo;
@@ -337,18 +337,18 @@ namespace BAL.Repository
 
                     Requestclient rc = new Requestclient();
                     rc.Requestid = req.Requestid;
-                    rc.Firstname = cm.PtFirstName;
-                    rc.Lastname = cm.PtLastName;
+                    rc.Firstname = cm.PatientFirstName;
+                    rc.Lastname = cm.PatientLastName;
                     rc.Phonenumber = cm.PatientPhoneNo;
-                    rc.Location = cm.ConCity + StateName;
-                    rc.Email = cm.PtEmail;
-                    rc.Address = cm.PtRoomSuite + ", " + cm.ConStreet + ", " + cm.ConCity + ", " + cm.ConState + ", " + cm.ConZipCode;
-                    rc.Street = cm.ConStreet;
-                    rc.City = cm.ConCity;
+                    rc.Location = cm.ConciergeCity + StateName;
+                    rc.Email = cm.PatientEmail;
+                    rc.Address = cm.PatientRoomNo + ", " + cm.ConciergeStreet + ", " + cm.ConciergeCity + ", " + cm.ConciergeState + ", " + cm.ConciergeZipCode;
+                    rc.Street = cm.ConciergeStreet;
+                    rc.City = cm.ConciergeCity;
                     rc.State = StateName;
-                    rc.Zipcode = cm.ConZipCode;
-                    rc.Notes = cm.PtSymptoms;
-                    rc.Regionid = cm.ConState;
+                    rc.Zipcode = cm.ConciergeZipCode;
+                    rc.Notes = cm.PatientSymptoms;
+                    rc.Regionid = cm.ConciergeState;
                     rc.Intdate = cm.PatientDateOfBirth?.Day;
                     rc.Strmonth = cm.PatientDateOfBirth?.Month.ToString();
                     rc.Intyear = cm.PatientDateOfBirth?.Year;
@@ -506,10 +506,10 @@ namespace BAL.Repository
         }
         public void BRequest(BusinessModel bm , string SetUpLink)
         {
-            bool userExists = _context.Users.Any(PatientData => PatientData.Email == bm.PtEmail);
+            bool userExists = _context.Users.Any(PatientData => PatientData.Email == bm.PatientEmail);
             string PatientPhoneNumber = "+" + bm.PatientCountryCode + "-" + bm.PatientPhoneNo;
             string BusinessPhoneNo = "+" + bm.BusinessCountryCode + "-" + bm.BusinessPhoneNo;
-            var StateName = _context.Regions.FirstOrDefault(region => region.Regionid == bm.state)?.Name;
+            var StateName = _context.Regions.FirstOrDefault(region => region.Regionid == bm.State)?.Name;
 
             if (!userExists)
             {
@@ -517,9 +517,9 @@ namespace BAL.Repository
 
                 string id = Guid.NewGuid().ToString();
                 user.Id = id;
-                user.Email = bm.PtEmail;
+                user.Email = bm.PatientEmail;
                 user.Phonenumber = bm.PatientPhoneNo;
-                user.Username = bm.PtEmail;
+                user.Username = bm.PatientEmail;
                 user.Createddate = DateTime.Now;
                 user.Phonenumber = BusinessPhoneNo;
                 _context.Aspnetusers.Add(user);
@@ -527,17 +527,17 @@ namespace BAL.Repository
 
                 User user_obj = new User();
                 user_obj.Aspnetuserid = user.Id;
-                user_obj.Firstname = bm.PtFirstName;
-                user_obj.Lastname = bm.PtLastName;
-                user_obj.Email = bm.PtEmail;
+                user_obj.Firstname = bm.PatientFirstName;
+                user_obj.Lastname = bm.PatientLastName;
+                user_obj.Email = bm.PatientEmail;
                 user_obj.Mobile = bm.PatientPhoneNo;
                 user_obj.Street = bm.Street;
-                user_obj.City = bm.city;
+                user_obj.City = bm.City;
                 user_obj.State = StateName;
-                user_obj.Zipcode = bm.zipcode;
+                user_obj.Zipcode = bm.ZipCode;
                 user_obj.Createddate = DateTime.Now;
                 user_obj.Createdby = id;
-                user_obj.Regionid = bm.state;
+                user_obj.Regionid = bm.State;
                 user_obj.Mobile = PatientPhoneNumber;
                 user_obj.Intyear = bm.PatientDateOfBirth?.Year;
                 user_obj.Intdate = bm.PatientDateOfBirth?.Day;
@@ -560,10 +560,10 @@ namespace BAL.Repository
                 Request req = new()
                 {
                     Requesttypeid = 1,
-                    Firstname = bm.BsFirstName,
-                    Lastname = bm.BsLastName,
+                    Firstname = bm.BusinessFirstName,
+                    Lastname = bm.BusinessLastName,
                     Phonenumber = BusinessPhoneNo,
-                    Email = bm.BsEmail,
+                    Email = bm.BusinessEmail,
                     Status = 1,
                     Createddate = DateTime.Now,
                     Userid = user_obj.Userid,
@@ -585,17 +585,17 @@ namespace BAL.Repository
                 Requestclient rc = new()
                 {
                     Requestid = req.Requestid,
-                    Firstname = bm.PtFirstName,
-                    Lastname = bm.BsLastName,
+                    Firstname = bm.PatientFirstName,
+                    Lastname = bm.BusinessLastName,
                     Phonenumber = PatientPhoneNumber,
                     Street = bm.Street,
-                    City = bm.city,
+                    City = bm.City,
                     State = StateName,
-                    Zipcode = bm.zipcode,
+                    Zipcode = bm.ZipCode,
                     Intdate = bm.PatientDateOfBirth?.Day,
                     Intyear = bm.PatientDateOfBirth?.Year,
                     Strmonth = bm.PatientDateOfBirth?.Month.ToString(),
-                    Email=bm.PtEmail
+                    Email=bm.PatientEmail
                 };
                 _context.Requestclients.Add(rc);
                 _context.SaveChanges();
@@ -605,7 +605,7 @@ namespace BAL.Repository
             }
             else
             {
-                User userData = _context.Users.FirstOrDefault(user=>user.Email==bm.PtEmail);
+                User userData = _context.Users.FirstOrDefault(user=>user.Email==bm.PatientEmail);
                 if (userData != null)
                 {
                     //!!!!!!!!!!!!!!!!!!!!Doubt!!!!!!!!!!!!!!!!!!!!
@@ -622,10 +622,10 @@ namespace BAL.Repository
                     Request req = new()
                     {
                         Requesttypeid = 1,
-                        Firstname = bm.BsFirstName,
-                        Lastname = bm.BsLastName,
+                        Firstname = bm.BusinessFirstName,
+                        Lastname = bm.BusinessLastName,
                         Phonenumber = BusinessPhoneNo,
-                        Email = bm.BsEmail,
+                        Email = bm.BusinessEmail,
                         Status = 1,
                         Createddate = DateTime.Now,
                         Userid = userData.Userid,
@@ -647,13 +647,13 @@ namespace BAL.Repository
                     Requestclient rc = new()
                     {
                         Requestid = req.Requestid,
-                        Firstname = bm.PtFirstName,
-                        Lastname = bm.BsLastName,
+                        Firstname = bm.PatientFirstName,
+                        Lastname = bm.BusinessLastName,
                         Phonenumber = PatientPhoneNumber,
                         Street = bm.Street,
-                        City = bm.city,
+                        City = bm.City,
                         State = StateName,
-                        Zipcode = bm.zipcode,
+                        Zipcode = bm.ZipCode,
                         Intdate = bm.PatientDateOfBirth?.Day,
                         Intyear = bm.PatientDateOfBirth?.Year,
                         Strmonth = bm.PatientDateOfBirth?.Month.ToString()

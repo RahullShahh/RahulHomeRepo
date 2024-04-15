@@ -283,12 +283,7 @@
                         </svg>
                         <span class="ms-2">Concierge</span>
                     </button>
-                    @* <button id="VipFilter" class="filter-options px-2 py-1 rounded d-flex align-items-center ms-2">
-                    <svg height="15" width="15" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <circle fill="#9966cd" r="45" cx="50" cy="50" stroke="grey" stroke-width="3" />
-                    </svg>
-                    <span class="ms-2">VIP</span>
-                    </button> *@
+                    
                 </div>
             </div>
         </div>
@@ -578,26 +573,19 @@
 <script src="~/lib/jquery/dist/jquery.min.js">
 </script>
 <script type="text/javascript">
-
-
     $('#selectregion').change(function () {
-
-
         var regionid = $(this).val();
-
         if (regionid != 0) {
             $.ajax({
                 type: "GET",
                 url: "/Admin/GetPhysicianForTransfer", 
                 data: { regionid: regionid },
                 success: function (response) {
-
                     $('#selectphysician').empty();
                     console.log(response.FirstName)
                     $.each(response, function (index, item) {
                         $('#selectphysician').append($('<option>').text(item.firstname).attr('value', item.physicianid));
                     });
-
                 }
             });
         }

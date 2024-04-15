@@ -397,10 +397,10 @@ namespace HalloDoc_Project.Controllers
         #endregion
 
         #region ACCESS
-        public IActionResult UserAccess()
-        {
-            return View("AccessViews/UserAccess");
-        }
+        //public IActionResult UserAccess()
+        //{
+        //    return View("AccessViews/UserAccess");
+        //}
         public IActionResult AccountAccess()
         {
             var roles = _context.Roles.ToList();
@@ -500,6 +500,175 @@ namespace HalloDoc_Project.Controllers
 
             return true;
         }
+
+        #region User Access
+        public IActionResult UserAccess(int accountType)
+        {
+            //int adminId = (int)HttpContext.Session.GetInt32("adminId");
+            //Admin admin = _context.Admins.FirstOrDefault(x => x.Adminid == adminId);
+
+            var aspRole = _context.Aspnetroles.ToList();
+
+            UserAccessModel model = new UserAccessModel();
+            //model.UserName = admin.Firstname + " " + admin.Lastname;
+            model.Aspnetroles = aspRole;
+
+            if (accountType == 0)
+            {
+                var adminList = from asp in _context.Aspnetusers
+                                join ad in _context.Admins on asp.Id equals ad.Aspnetuserid
+                                select new ListOfUsersViewModel
+                                {
+                                    AccountType = "Admin",
+                                    AccountPOC = asp.Username,
+                                    Phone = ad.Mobile,
+                                    Status = "STATUS",
+                                    OpenRequest = 0,
+                                    accountType = 1,
+                                    id = ad.Adminid
+                                };
+
+
+                var physicianList = from asp in _context.Aspnetusers
+                                    join phy in _context.Physicians on asp.Id equals phy.Aspnetuserid
+                                    where phy.Isdeleted != true
+                                    select new ListOfUsersViewModel
+                                    {
+                                        AccountType = "Physician",
+                                        AccountPOC = asp.Username,
+                                        Phone = phy.Mobile,
+                                        Status = "STATUS",
+                                        OpenRequest = 0,
+                                        accountType = 2,
+                                        id = phy.Physicianid
+                                    };
+
+
+                IEnumerable<ListOfUsersViewModel> x = adminList.ToList();
+                IEnumerable<ListOfUsersViewModel> y = physicianList.ToList();
+                IEnumerable<ListOfUsersViewModel> mergedList = x.Union(y);
+
+                model.UserList = mergedList.ToList();
+
+            }
+            if (accountType == 1)
+            {
+                var listOfUsers = from asp in _context.Aspnetusers
+                                  join ad in _context.Admins on asp.Id equals ad.Aspnetuserid
+                                  select new ListOfUsersViewModel
+                                  {
+                                      AccountType = "Admin",
+                                      AccountPOC = asp.Username,
+                                      Phone = ad.Mobile,
+                                      Status = "STATUS",
+                                      OpenRequest = 0,
+                                      accountType = 1,
+                                      id = ad.Adminid
+                                  };
+
+                model.UserList = listOfUsers.ToList();
+            };
+            if (accountType == 2)
+            {
+                var listOfUsers = from asp in _context.Aspnetusers
+                                  join phy in _context.Physicians on asp.Id equals phy.Aspnetuserid
+                                  where phy.Isdeleted == false
+                                  select new ListOfUsersViewModel
+                                  {
+                                      AccountType = "Physician",
+                                      AccountPOC = asp.Username,
+                                      Phone = phy.Mobile,
+                                      Status = "STATUS",
+                                      OpenRequest = 0,
+                                      accountType = 2,
+                                      id = phy.Physicianid
+                                  };
+
+                model.UserList = listOfUsers.ToList();
+            }
+
+            return View("AccessViews/UserAccess",model);
+        }
+        public IActionResult AccountTypeFilter(int accountType)
+        {
+            UserAccessModel model = new UserAccessModel();
+
+            if (accountType == 0)
+            {
+                var adminList = from asp in _context.Aspnetusers
+                                join ad in _context.Admins on asp.Id equals ad.Aspnetuserid
+                                select new ListOfUsersViewModel
+                                {
+                                    AccountType = "Admin",
+                                    AccountPOC = asp.Username,
+                                    Phone = ad.Mobile,
+                                    Status = "STATUS",
+                                    OpenRequest = 0,
+                                    accountType = 1,
+                                    id = ad.Adminid
+                                };
+
+                var physicianList = from asp in _context.Aspnetusers
+                                    join phy in _context.Physicians on asp.Id equals phy.Aspnetuserid
+                                    where phy.Isdeleted != true
+                                    select new ListOfUsersViewModel
+                                    {
+                                        AccountType = "Physician",
+                                        AccountPOC = asp.Username,
+                                        Phone = phy.Mobile,
+                                        Status = "STATUS",
+                                        OpenRequest = 0,
+                                        accountType = 2,
+                                        id = phy.Physicianid
+                                    };
+
+                IEnumerable<ListOfUsersViewModel> x = adminList.ToList();
+                IEnumerable<ListOfUsersViewModel> y = physicianList.ToList();
+                IEnumerable<ListOfUsersViewModel> MergedList = x.Union(y);
+
+                model.UserList = MergedList.ToList();
+
+            }
+            if (accountType == 1)
+            {
+                var listOfUsers = from asp in _context.Aspnetusers
+                                  join ad in _context.Admins on asp.Id equals ad.Aspnetuserid
+                                  select new ListOfUsersViewModel
+                                  {
+                                      AccountType = "Admin",
+                                      AccountPOC = asp.Username,
+                                      Phone = ad.Mobile,
+                                      Status = "STATUS",
+                                      OpenRequest = 0,
+                                      accountType = 1,
+                                      id = ad.Adminid
+                                  };
+
+                model.UserList = listOfUsers.ToList();
+            };
+
+            if (accountType == 2)
+            {
+                var listOfUsers = from asp in _context.Aspnetusers
+                                  join phy in _context.Physicians on asp.Id equals phy.Aspnetuserid
+                                  where (phy.Isdeleted != true)
+                                  select new ListOfUsersViewModel
+                                  {
+                                      AccountType = "Physician",
+                                      AccountPOC = asp.Username,
+                                      Phone = phy.Mobile,
+                                      Status = "STATUS",
+                                      OpenRequest = 0,
+                                      accountType = 2,
+                                      id = phy.Physicianid
+                                  };
+
+                model.UserList = listOfUsers.ToList();
+            }
+            return PartialView("AccessViews/UserAccessPartialView", model);
+        }
+        #endregion
+
         #endregion
 
         #region PROVIDER

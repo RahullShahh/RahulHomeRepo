@@ -94,7 +94,7 @@
 
 <body style="width:100%;" class="">
     <br>
-
+    <partial name="_ValidationScriptsPartial" />
     <div class="row justify-content-end">
         <div class="col-2">
             <button class="btn btn-outline-info backbtn" onclick="window.history.back(-1)" style="width:auto">
@@ -113,16 +113,20 @@
                 <div class="row">
                     <div class="col-12 col-sm-6 mt-4">
                         <div class="form-floating">
-                            <input type="text" asp-for="firstName" class="PatientInputs form-control" id="YourFname" placeholder="Your First Name ">
+                            <input type="text" asp-for="FirstName" class="PatientInputs form-control" id="YourFname" placeholder="Your First Name ">
                             <label for="YourFname">Your First Name</label>
                         </div>
+                        <span asp-validation-for="FirstName" class="validation"></span>
+
 
                     </div>
                     <div class="col-12 col-sm-6 mt-4">
                         <div class="form-floating">
-                            <input type="text" asp-for="lastName" class="PatientInputs form-control" id="YourLName" placeholder="Your Last Name">
+                            <input type="text" asp-for="LastName" class="PatientInputs form-control" id="YourLName" placeholder="Your Last Name">
                             <label for="YourLName">Your Last Name</label>
                         </div>
+                        <span asp-validation-for="LastName" class="validation"></span>
+
                     </div>
                 </div>
 
@@ -132,20 +136,26 @@
                             <input hidden asp-for="FriendFamilyCountryCode" id="flag" />
                             <input id="phone" asp-for="FriendFamilyPhoneNo" class="PatientInputs form-control" type="tel" />
                         </div>
+                        <span asp-validation-for="FriendFamilyPhoneNo" class="validation"></span>
+
                     </div>
                     <div class="col-12 col-sm-6 mt-4">
                         <div class="form-floating">
-                            <input type="email" asp-for="email" class="PatientInputs form-control" id="email" placeholder="Your Email">
+                            <input type="email" asp-for="Email" class="PatientInputs form-control" id="email" placeholder="Your Email">
                             <label for="email">Your Email</label>
                         </div>
+                        <span asp-validation-for="Email" class="validation"></span>
+
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12 col-sm-6 mt-4">
                         <div class="form-floating">
-                            <input type="text" asp-for="relation" class="PatientInputs form-control" id="relation" placeholder="Room">
+                            <input type="text" asp-for="Relation" class="PatientInputs form-control" id="relation" placeholder="Room">
                             <label for="relation">Relation With Patient</label>
                         </div>
+                        <span asp-validation-for="Relation" class="validation"></span>
+
                     </div>
                 </div>
                 <div class="row">
@@ -158,22 +168,30 @@
                                   rows="5"></textarea>
                         <label for="forfloatingtextarea" class="ms-2">Enter Brief Details Of Symptoms (Optional)</label>
                     </div>
+                    <span asp-validation-for="PatientModel.Symptoms" class="validation"></span>
+
                 </div>
-                <div class="row">
+                <div class="row ">
                     <div class="col-12 col-sm-6 mt-4 form-floating ">
                         <input type="text" asp-for="PatientModel.FirstName" placeholder="First Name" class="PatientInputs form-control" id="fname">
                         <label for="fname" class="ms-2">First Name</label>
                     </div>
+                    <span asp-validation-for="PatientModel.FirstName" class="validation"></span>
+
                     <div class="col-12 col-sm-6 mt-4 form-floating  ">
                         <input type="text" asp-for="PatientModel.LastName" placeholder="Last Name" class="PatientInputs form-control" id="lname">
                         <label for="lname" class="ms-2">Last Name</label>
                     </div>
+                    <span asp-validation-for="PatientModel.LastName" class="validation"></span>
+
                 </div>
-                <div class="row ">
+                <div class="row">
                     <div class="col-12 col-sm-6  mt-4 form-floating">
                         <input type="date" asp-for="PatientModel.DateOfBirth" placeholder="Date Of Birth" class="PatientInputs form-control" id="DOB">
                         <label for="DOB" class="ms-2">Date Of Birth</label>
                     </div>
+                    <span asp-validation-for="PatientModel.DateOfBirth" class="validation"></span>
+
                 </div>
                 <div class="row mt-4">
                     <h5 for="">Patient Contact Information</h5>
@@ -184,6 +202,8 @@
                             <input type="email" asp-for="PatientModel.Email" placeholder="Email" class="PatientInputs form-control" id="emailfloat">
                             <label for="emailfloat">Email</label>
                         </div>
+                        <span asp-validation-for="PatientModel.Email" class="validation"></span>
+
                     </div>
                     <div class="col-12 col-sm-6 mt-4 ">
 
@@ -191,6 +211,8 @@
                             <input hidden asp-for="PatientModel.CountryCode" id="flag1" />
                             <input id="phone1" asp-for="PatientModel.PhoneNo" class="PatientInputs form-control" type="tel"></input>
                         </div>
+                        <span asp-validation-for="PatientModel.PhoneNo" class="validation"></span>
+
                     </div>
                 </div>
                 <div class="row mt-4">
@@ -202,12 +224,16 @@
                             <input asp-for="PatientModel.Street" type="text " class="PatientInputs form-control" id="PatientStreet" placeholder="Email ">
                             <label for="PatientStreet">Street</label>
                         </div>
+                        <span asp-validation-for="PatientModel.Street" class="validation"></span>
+
                     </div>
                     <div class="col-12 col-sm-6 mt-4">
                         <div class="form-floating">
                             <input type="text" asp-for="PatientModel.City" class="PatientInputs form-control" id="floatingCity" placeholder="City">
                             <label for="floatingCity">City</label>
                         </div>
+                        <span asp-validation-for="PatientModel.City" class="validation"></span>
+
                     </div>
                 </div>
 
@@ -224,6 +250,8 @@
                                 </select>
                                 <label for="floatingState">State</label>
                             </div>
+                            <span asp-validation-for="PatientModel.State" class="validation"></span>
+
                         </div>
                     </div>
                     <div class="col-12 col-sm-6 mt-4">
@@ -231,6 +259,8 @@
                             <input type="number" asp-for="PatientModel.ZipCode" class="PatientInputs form-control" id="floatingZip" placeholder="zip">
                             <label for="floatingZip">Zip Code</label>
                         </div>
+                        <span asp-validation-for="PatientModel.ZipCode" class="validation"></span>
+
                     </div>
                 </div>
                 <div class="row ">
@@ -239,6 +269,8 @@
                             <input type="text" asp-for="PatientModel.RoomSuite" class="PatientInputs form-control" id="floatingRoom" placeholder="Room">
                             <label for="floatingRoom">Room # / Suite (Optional)</label>
                         </div>
+                        <span asp-validation-for="PatientModel.RoomSuite" class="validation"></span>
+
                     </div>
                 </div>
                 <div class="row mt-4">

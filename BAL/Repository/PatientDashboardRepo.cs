@@ -44,18 +44,20 @@ namespace BAL.Repository
         public void EditProfile(PatientProfileViewModel ppm, string email)
         {
             User dbUser = _context.Users.FirstOrDefault(u => u.Email == ppm.email);
-            dbUser.Firstname = ppm.FirstName;
-            dbUser.Lastname = ppm.LastName;
-            dbUser.Intdate = ppm.Date.Day;
-            dbUser.Strmonth = ppm.Date.Month.ToString();
-            dbUser.Intyear = ppm.Date.Year;
-            dbUser.Mobile = ppm.PhoneNo;
-            dbUser.Street = ppm.street;
-            dbUser.City = ppm.city;
-            dbUser.State = ppm.state;
-            dbUser.Zipcode = ppm.zipcode;
-            _context.Update(dbUser);
-            _context.SaveChanges();
+            if (dbUser != null) 
+            {
+                dbUser.Firstname = ppm.FirstName;
+                dbUser.Lastname = ppm.LastName;
+                dbUser.Intdate = ppm.Date.Day;
+                dbUser.Strmonth = ppm.Date.Month.ToString();
+                dbUser.Intyear = ppm.Date.Year;
+                dbUser.Mobile = ppm.PhoneNo;
+                dbUser.Street = ppm.street;
+                dbUser.City = ppm.city;
+                dbUser.State = ppm.state;
+                dbUser.Zipcode = ppm.zipcode;
+                _context.Update(dbUser);
+            }            
         }
 
         public ViewDocumentsViewModel ViewPatientDocsGet(int requestid, string email)
@@ -90,10 +92,17 @@ namespace BAL.Repository
         }
         public PatientDashboardViewModel PatientDashboard( string email)
         {
-            User user = _context.Users.FirstOrDefault(u => u.Email == email);
-            PatientDashboardViewModel pd = new PatientDashboardViewModel();
-            pd.Username = user.Firstname + " " + user.Lastname == null ? "" : user.Lastname;
-            pd.Requests = _context.Requests.Where(req => req.Userid == user.Userid).ToList();
+            User? user = _context.Users.FirstOrDefault(u => u.Email == email);
+
+            if (user == null)
+            {
+                return null;
+            }
+            PatientDashboardViewModel pd = new()
+            {
+                Username = user.Firstname + " " + user.Lastname,
+                Requests = _context.Requests.Where(req => req.Userid == user.Userid).ToList()
+            };
             List<int> documentCount = new List<int>();
             for (int i = 0; i < pd.Requests.Count; i++)
             {

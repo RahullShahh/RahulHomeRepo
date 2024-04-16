@@ -1,7 +1,9 @@
-﻿using BAL.Interfaces;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using BAL.Interfaces;
 using DAL.DataContext;
 using DAL.DataModels;
 using DAL.ViewModels;
+using System.Collections;
 
 namespace BAL.Repository
 {
@@ -22,10 +24,11 @@ namespace BAL.Repository
     public class AdminActionsRepo : IAdminActions
     {
         private readonly ApplicationDbContext _context;
-
-        public AdminActionsRepo(ApplicationDbContext context)
+        private readonly INotyfService _notyf;
+        public AdminActionsRepo(ApplicationDbContext context,INotyfService notyf)
         {
             _context = context;
+            _notyf = notyf;
         }
         public ViewCaseViewModel ViewCaseAction(int requestid)
         {
@@ -352,5 +355,136 @@ namespace BAL.Repository
             }
         }
 
+        public List<Scheduling> GetEvents(int region)
+        {
+            var eventswithoutdelet = (from s in _context.Shifts
+                                      join pd in _context.Physicians on s.Physicianid equals pd.Physicianid
+                                      join sd in _context.Shiftdetails on s.Shiftid equals sd.Shiftid into shiftGroup
+                                      from sd in shiftGroup.DefaultIfEmpty()
+
+                                      select new Scheduling
+                                      {
+                                          Shiftid = sd.Shiftdetailid,
+                                          Status = sd.Status,
+                                          Starttime = sd.Starttime,
+                                          Endtime = sd.Endtime,
+                                          Physicianid = pd.Physicianid,
+                                          PhysicianName = pd.Firstname + ' ' + pd.Lastname,
+                                          Shiftdate = sd.Shiftdate,
+                                          ShiftDetailId = sd.Shiftdetailid,
+                                          Regionid = sd.Regionid,
+                                          ShiftDeleted = sd.Isdeleted
+                                      }).Where(item => region == 0 || item.Regionid == region).ToList();
+            var events = eventswithoutdelet.Where(item => !item.ShiftDeleted).ToList();
+            return events;
+        }
+
+        #region Creatshift
+
+
+        public void CreateShift(Scheduling model, string email, int physicianId)
+        {
+            var admin = _context.Admins.FirstOrDefault(s => s.Email == email);
+
+
+            bool shiftExists = _context.Shiftdetails.Any(sd => sd.Shift.Physicianid == (physicianId != 0 ? physicianId : model.Physicianid) &&
+            sd.Shiftdate.Date == model.Startdate.ToDateTime(TimeOnly.FromDateTime(DateTime.Now)).Date &&
+            (sd.Starttime <= model.Endtime ||
+            sd.Endtime >= model.Starttime));
+
+
+            if (!shiftExists)
+            {
+                Shift shift = new Shift();
+                shift.Physicianid = physicianId != 0 ? physicianId : model.Physicianid;
+                shift.Startdate = model.Startdate;
+                shift.Isrepeat =  model.Isrepeat ;
+                shift.Repeatupto = model.Repeatupto;
+                shift.Createddate = DateTime.Now;
+                shift.Createdby = physicianId != 0 ? _context.Physicians.FirstOrDefault(s => s.Physicianid == physicianId).Aspnetuserid : admin.Aspnetuserid;
+                _context.Shifts.Add(shift);
+                _context.SaveChanges();
+
+                Shiftdetail sd = new Shiftdetail();
+                sd.Shiftid = shift.Shiftid;
+                sd.Shiftdate = new DateTime(model.Startdate.Year, model.Startdate.Month, model.Startdate.Day);
+                sd.Starttime = model.Starttime;
+                sd.Endtime = model.Endtime;
+                sd.Regionid = model.Regionid;
+                sd.Status = model.Status;
+                sd.Isdeleted =  false ;
+
+
+                _context.Shiftdetails.Add(sd);
+                _context.SaveChanges();
+
+                Shiftdetailregion sr = new Shiftdetailregion();
+                sr.Shiftdetailid = sd.Shiftdetailid;
+                sr.Regionid = (int)model.Regionid;
+                sr.Isdeleted =  false;
+                _context.Shiftdetailregions.Add(sr);
+                _context.SaveChanges();
+
+                if (shift.Isrepeat)
+                {
+                    var stringArray = model.checkWeekday.Split(",");
+                    foreach (var weekday in stringArray)
+                    {
+
+                        DateTime startDateForWeekday = model.Startdate.ToDateTime(TimeOnly.FromDateTime(DateTime.Now)).AddDays((7 + int.Parse(weekday) - (int)model.Startdate.DayOfWeek) % 7);
+
+
+                        if (startDateForWeekday < model.Startdate.ToDateTime(TimeOnly.FromDateTime(DateTime.Now)))
+                        {
+                            startDateForWeekday = startDateForWeekday.AddDays(7); // Add 7 days to move it to the next occurrence
+                        }
+
+                        // Iterate over Refill times
+                        for (int i = 0; i < shift.Repeatupto; i++)
+                        {
+                            bool shiftDetailsExists = _context.Shiftdetails.Any(sd => sd.Shift.Physicianid == model.Physicianid &&
+                            sd.Shiftdate.Date == model.Startdate.ToDateTime(TimeOnly.FromDateTime(DateTime.Now)).Date &&
+                            (sd.Starttime <= model.Endtime ||
+                             sd.Endtime >= model.Starttime));
+                            // Create a new ShiftDetail instance for each occurrence
+
+                            if (!shiftDetailsExists)
+                            {
+                                Shiftdetail shiftDetail = new Shiftdetail
+                                {
+                                    Shiftid = shift.Shiftid,
+                                    Shiftdate = startDateForWeekday.AddDays(i * 7), // Add i  7 days to get the next occurrence
+                                    Regionid = (int)model.Regionid,
+                                    Starttime = model.Starttime,
+                                    Endtime = model.Endtime,
+                                    Status = 0,
+                                    Isdeleted =  false 
+                                };
+
+                                // Add the ShiftDetail to the database context
+                                _context.Add(shiftDetail);
+                                _context.SaveChanges();
+                            }
+                            else
+                            {
+
+                                _notyf.Error("shift already exist");
+                            }
+
+                        }
+                    }
+                }
+            }
+            else
+            {
+                _notyf.Error("shift already exist");
+            }
+
+        }
+        #endregion 
+
+
     }
+
 }
+

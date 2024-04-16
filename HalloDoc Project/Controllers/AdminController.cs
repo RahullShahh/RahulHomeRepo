@@ -10,10 +10,9 @@ using System.Text.Json.Nodes;
 using static HalloDoc_Project.Extensions.Enumerations;
 using BAL.Interfaces.InterfaceProviderLocation;
 using Microsoft.EntityFrameworkCore;
-using DocumentFormat.OpenXml.Wordprocessing;
-using DocumentFormat.OpenXml.Bibliography;
 using BAL.Interfaces.IAdminRecords;
 using BAL.Interfaces.IProvider;
+using System.Collections;
 
 namespace HalloDoc_Project.Controllers
 {
@@ -111,15 +110,257 @@ namespace HalloDoc_Project.Controllers
         #endregion
 
         #region SCHEDULING
-        [HttpPost]
-        public IActionResult Calendar()
-        {
-            return View("ProviderViews/Calendar");
-        }
+        //public IActionResult Calendar()
+        //{
+        //    return View("ProviderViews/Calendar");
+        //}
+        //public IActionResult ProviderScheduling()
+        //{
+        //    return View("ProviderViews/ProviderScheduling");
+        //}
+        #region scheduling
         public IActionResult ProviderScheduling()
         {
+            var region = _context.Regions.ToList();
+            ViewBag.regions = region;
             return View("ProviderViews/ProviderScheduling");
         }
+        [HttpGet]
+        //this action is called with the region from ajax
+        public IActionResult GetPhysicianShift(int region)
+        {
+            // Retrieve physicians associated with the specified region
+            var physicians = (from physicianRegion in _context.Physicianregions
+                              where region == 0 || physicianRegion.Regionid == region
+                              select physicianRegion.Physician)
+                             .ToList();
+
+            return Json(physicians);
+        }
+
+        [HttpGet]
+        public IActionResult GetEvents(int region)
+        {
+            var events = _adminActions.GetEvents(region);
+            var mappedEvents = events.Select(e => new
+            {
+                id = e.Shiftid,
+                resourceId = e.Physicianid,
+                title = e.PhysicianName,
+                start = new DateTime(e.Shiftdate.Value.Year, e.Shiftdate.Value.Month, e.Shiftdate.Value.Day, e.Starttime.Hour, e.Starttime.Minute, e.Starttime.Second),
+                end = new DateTime(e.Shiftdate.Value.Year, e.Shiftdate.Value.Month, e.Shiftdate.Value.Day, e.Endtime.Hour, e.Endtime.Minute, e.Endtime.Second),
+                ShiftDetailId = e.ShiftDetailId,
+                region = _context.Regions.Where(i => i.Regionid == e.Regionid),
+                status = e.Status
+            }).ToList();
+
+            return Json(mappedEvents);
+        }
+
+
+        
+        [HttpPost]
+        public IActionResult CreateShift(Scheduling model)
+        {
+            var email = HttpContext.Session.GetString("Email");
+            int physicianId = HttpContext.Session.GetInt32("PhysicianId") ?? 0;
+            _adminActions.CreateShift(model, email, physicianId);
+            return RedirectToAction("ProviderScheduling");
+        }
+
+        [HttpPost]
+        public IActionResult ChangeShift(int shiftDetailId, DateTime startDate, TimeOnly startTime, TimeOnly endTime, int region)
+        {
+            // Find the shift detail by its ID
+            Shiftdetail shiftdetail = _context.Shiftdetails.Find(shiftDetailId);
+
+            // If shift detail is not found, return a 404 Not Found response
+            if (shiftdetail == null)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                // Update the shift detail properties
+                shiftdetail.Shiftdate = startDate;
+                shiftdetail.Starttime = startTime;
+                shiftdetail.Endtime= endTime;
+
+                // Update the database
+                _context.Shiftdetails.Update(shiftdetail);
+                _context.SaveChanges();
+                var events = _adminActions.GetEvents(region);
+                var mappedEvents = events.Select(e => new
+                {
+                    id = e.Shiftid,
+                    resourceId = e.Physicianid,
+                    title = e.PhysicianName,
+                    start = new DateTime(e.Shiftdate.Value.Year, e.Shiftdate.Value.Month, e.Shiftdate.Value.Day, e.Starttime.Hour, e.Starttime.Minute, e.Starttime.Second),
+                    end = new DateTime(e.Shiftdate.Value.Year, e.Shiftdate.Value.Month, e.Shiftdate.Value.Day, e.Endtime.Hour, e.Endtime.Minute, e.Endtime.Second),
+                    ShiftDetailId = e.ShiftDetailId,
+                    region = _context.Regions.Where(i => i.Regionid == e.Regionid),
+                    status = e.Status
+                }).ToList();
+                // Return a 200 OK response
+                return Ok(new { message = "Shift detail updated successfully.", events = mappedEvents });
+            }
+            catch (Exception ex)
+            {
+                // Return a 400 Bad Request response with the error message
+                return BadRequest("Error updating shift detail: " + ex.Message);
+            }
+        }
+        public IActionResult DeleteShift(int shiftDetailId, int region)
+        {
+            Shiftdetail shiftdetail = _context.Shiftdetails.Find(shiftDetailId);
+            if (shiftdetail == null)
+            {
+                return NotFound("Shift detail not found.");
+            }
+            shiftdetail.Isdeleted =  true;
+            _context.Shiftdetails.Update(shiftdetail);
+            _context.SaveChanges();
+            var events = _adminActions.GetEvents(region);
+            var mappedEvents = events.Select(e => new
+            {
+                id = e.Shiftid,
+                resourceId = e.Physicianid,
+                title = e.PhysicianName,
+                start = new DateTime(e.Shiftdate.Value.Year, e.Shiftdate.Value.Month, e.Shiftdate.Value.Day, e.Starttime.Hour, e.Starttime.Minute, e.Starttime.Second),
+                end = new DateTime(e.Shiftdate.Value.Year, e.Shiftdate.Value.Month, e.Shiftdate.Value.Day, e.Endtime.Hour, e.Endtime.Minute, e.Endtime.Second),
+                ShiftDetailId = e.ShiftDetailId,
+                region = _context.Regions.Where(i => i.Regionid == e.Regionid),
+                status = e.Status
+            }).ToList();
+            return Ok(new { message = "Shift detail Deleted successfully.", events = mappedEvents });
+
+        }
+
+        public IActionResult ReturnShift(int shiftDetailId, int region)
+        {
+            Shiftdetail shiftdetail = _context.Shiftdetails.Find(shiftDetailId);
+
+            // If shift detail is not found, return a 404 Not Found response
+            if (shiftdetail == null)
+            {
+                return NotFound("Shift detail not found.");
+            }
+            shiftdetail.Status = (short)((shiftdetail.Status == 0) ? 1 : 0);
+
+            _context.Shiftdetails.Update(shiftdetail);
+            _context.SaveChanges();
+            var events = _adminActions.GetEvents(region);
+            var mappedEvents = events.Select(e => new
+            {
+                id = e.Shiftid,
+                resourceId = e.Physicianid,
+                title = e.PhysicianName,
+                start = new DateTime(e.Shiftdate.Value.Year, e.Shiftdate.Value.Month, e.Shiftdate.Value.Day, e.Starttime.Hour, e.Starttime.Minute, e.Starttime.Second),
+                end = new DateTime(e.Shiftdate.Value.Year, e.Shiftdate.Value.Month, e.Shiftdate.Value.Day, e.Endtime.Hour, e.Endtime.Minute, e.Endtime.Second),
+                ShiftDetailId = e.ShiftDetailId,
+                region = _context.Regions.Where(i => i.Regionid == e.Regionid),
+                status = e.Status
+            }).ToList();
+            return Ok(new { message = "Shift detail updated successfully.", events = mappedEvents });
+
+        }
+
+        public IActionResult ReviewShift()
+        {
+            ShiftDetailModel shiftDetailModel = new ShiftDetailModel();
+            shiftDetailModel.Regions = _context.Regions.ToList();
+            return View("ProviderViews/ReviewShift",shiftDetailModel);
+        }
+
+        public IActionResult GetShifts(int region)
+        {
+            //0 for APPROVED
+            //1 for Pending
+            var result = (from shiftDetail in _context.Shiftdetails
+                          where ((shiftDetail.Regionid == region || region == 0) &&
+                             shiftDetail.Status != 0 && shiftDetail.Isdeleted!=  true)
+                          select new ShiftDetailModel
+                          {
+                              physicianName = shiftDetail.Shift.Physician.Firstname,
+                              ShiftDetailId = shiftDetail.Shiftdetailid,
+                              day = shiftDetail.Shiftdate.ToString("MMM dd, yyyy"),
+                              starttime = shiftDetail.Starttime,
+                              endtime = shiftDetail.Endtime,
+                              Regioname = _context.Regions.FirstOrDefault(s => s.Regionid == shiftDetail.Regionid).Name,
+
+                          }).ToList();
+            return PartialView("ProviderViews/ReviewShiftPartial", result);
+        }
+
+        [HttpPost]
+        public IActionResult ApprovedSelected(string[] checkedValues)
+        {
+
+            foreach (var item in checkedValues)
+            {
+                if (item != "0")
+                {
+                    var status = _context.Shiftdetails.FirstOrDefault(s => s.Shiftdetailid == int.Parse(item));
+                    status.Status = 0;
+                    _context.Shiftdetails.Update(status);
+                }
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction("ReviewShift");
+
+        }
+
+        public IActionResult DeleteSelected(string[] checkedValues)
+        {
+
+            foreach (var item in checkedValues)
+            {
+                if (item != "0")
+                {
+                    var shiftToDelete = _context.Shiftdetails.FirstOrDefault(s => s.Shiftdetailid == int.Parse(item));
+                    shiftToDelete.Isdeleted = true;
+                    _context.Shiftdetails.Update(shiftToDelete);
+                }
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction("ReviewShift");
+
+        }
+
+        public IActionResult MdOnCall()
+        {
+            List<Region> regions = _context.Regions.ToList();
+            ViewBag.Regions = regions;
+            return View("ProviderViews/MDOnCall");
+        }
+
+
+        public IActionResult GetPhysiciansOnCall(string region)
+        {
+            DateTime today = DateTime.Today;
+            BitArray trueBitArray = new BitArray(new[] { true });
+            var onDuty = (from physician in _context.Physicians
+                          join shift in _context.Shifts on physician.Physicianid equals shift.Physicianid into shiftJoin
+                          from shiftRecord in shiftJoin.DefaultIfEmpty()
+                          join shiftDetail in _context.Shiftdetails on shiftRecord.Shiftid equals shiftDetail.Shiftid into shiftDetailJoin
+                          from shiftDetailRecord in shiftDetailJoin.DefaultIfEmpty()
+                          where shiftDetailRecord.Isdeleted != true && shiftDetailRecord.Shiftdate.Date == today.Date
+                                                            && shiftDetailRecord.Starttime<= TimeOnly.FromDateTime(DateTime.Now)
+                                                            && shiftDetailRecord.Endtime>= TimeOnly.FromDateTime(DateTime.Now)
+                          select physician).Where(x => region == "0" || x.Regionid == int.Parse(region)).Distinct().ToList();
+
+            var offDuty = _context.Physicians.Where(x => region == "0" || x.Regionid == int.Parse(region)).ToList().Except(onDuty).ToList();
+
+            ProvidersOnCallModel providersOnCall = new ProvidersOnCallModel { OffDuty = offDuty, OnDuty = onDuty };
+
+            return PartialView("ProviderViews/MdOnCallPartial", providersOnCall);
+        }
+        #endregion
         #endregion
 
         #region ADMIN DASHBOARD ACTIONS

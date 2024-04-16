@@ -1,12 +1,4 @@
-﻿using DAL.DataModels;
-using DAL.ViewModels;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DAL.ViewModels;
 
 namespace BAL.Interfaces
 {
@@ -23,5 +15,7 @@ namespace BAL.Interfaces
         public void CloseCasePost(CloseCaseViewModel model,int requestid);
         public void ChangeRequestStatusToClosed(int requestId);
         public void CreateRequestFromAdminDashboard(CreateRequestViewModel model);
+        public List<Scheduling> GetEvents(int region);
+        public void CreateShift(Scheduling model, string email, int physicianId);
     }
 }

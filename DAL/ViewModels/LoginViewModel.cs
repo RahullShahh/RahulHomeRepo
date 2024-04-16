@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DAL.ViewModels
 {
     public class LoginViewModel
     {
-        [Required]
-        public string Username {  get; set; }
-        [Required]
-        public string Password { get; set; }
+        [Required(ErrorMessage ="Enter Your Username")]
+        public required string Username {  get; set; }
+        [Required(ErrorMessage ="Enter Password")]
+        public required string Password { get; set; }
     }
 }

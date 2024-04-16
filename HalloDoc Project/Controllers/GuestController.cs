@@ -5,6 +5,7 @@ using DAL.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using BAL.Repository;
 using AspNetCoreHero.ToastNotification.Abstractions;
+using System.Web.Optimization;
 
 namespace HalloDoc_Project.Controllers
 {
@@ -311,6 +312,19 @@ namespace HalloDoc_Project.Controllers
 
                         _notyf.Success("Logged In Successfully");
                         return RedirectToAction("AdminDashboard", "Admin");
+                    }
+                    else if (v.Role == "Physician")
+                    {
+                        Physician physician = _context.Physicians.FirstOrDefault(phy=>phy.Aspnetuserid==v.Id);
+                        if(physician!=null)
+                        {
+                            HttpContext.Session.SetString("AspnetuserId", physician.Aspnetuserid);
+                            var token = _jwtToken.generateJwtToken(physician.Aspnetuserid, "Physician");
+                            Response.Cookies.Append("jwt", token);
+
+                            _notyf.Success("Logged In Successfully");
+                            return RedirectToAction("ProviderDashboard", "Provider");
+                        }
                     }
                 }
                 else

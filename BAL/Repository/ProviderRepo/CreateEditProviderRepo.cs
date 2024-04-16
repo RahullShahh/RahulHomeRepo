@@ -3,11 +3,6 @@ using BAL.Interfaces.IProvider;
 using DAL.DataContext;
 using DAL.DataModels;
 using DAL.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BAL.Repository.ProviderRepo
 {
@@ -31,7 +26,9 @@ namespace BAL.Repository.ProviderRepo
             user.Phonenumber = Model.PhoneNo;
             user.Createddate = DateTime.Now;
             user.Role = "Physician";
+
             _context.Aspnetusers.Add(user);
+            _context.SaveChanges();
 
             Physician Doctor = new Physician();
             Doctor.Aspnetuserid = id;
@@ -65,6 +62,7 @@ namespace BAL.Repository.ProviderRepo
 
             _context.Physiciannotifications.Add(notifications);
             _context.SaveChanges();
+
             return Doctor;
         }
 

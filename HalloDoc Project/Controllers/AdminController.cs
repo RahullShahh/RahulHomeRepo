@@ -232,11 +232,11 @@ namespace HalloDoc_Project.Controllers
             var RequestExistStatus = _context.Encounterforms.FirstOrDefault(x => x.Requestid == requestId);
             if (RequestExistStatus == null)
             {
-                EncModel.ifExist = false;
+                EncModel.IfExists = false;
             }
             if (RequestExistStatus != null)
             {
-                EncModel.ifExist = true;
+                EncModel.IfExists = true;
             }
             return View("EncounterForm", EncModel);
         }
@@ -686,7 +686,6 @@ namespace HalloDoc_Project.Controllers
         {
             if (ModelState.IsValid)
             {
-                
                 Physician Doctor=_createEditProviderRepo.AddNewPhysicianDetails(Model);
                 if (Model.SelectPhoto != null)
                 {

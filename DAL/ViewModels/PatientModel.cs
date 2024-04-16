@@ -15,7 +15,7 @@ namespace DAL.ViewModels
         public string? LastName { get; set; }
         
         [Required(ErrorMessage ="Date of Birth cannot be empty")]
-        [DateNotInFutureAttribute(ErrorMessage = "Birthdate cannot be in future")]
+       // [DateNotInFutureAttribute(ErrorMessage = "Birthdate cannot be in future")]
         public DateTime? DateOfBirth { get; set; }
         
         [Required(ErrorMessage ="Email cannot be kept empty")]

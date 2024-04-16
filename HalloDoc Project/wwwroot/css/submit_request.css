@@ -12,7 +12,13 @@
         opacity: .3;
     }
 }
+* {
+    font-family: "Inter"
+}
 
+.submitScreenButton{
+    font-family:"Inter"
+}
 .btno1 {
     background-color: #10bce9;
     color: white;

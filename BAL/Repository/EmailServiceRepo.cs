@@ -4,7 +4,6 @@ using System.Net;
 using DAL.DataContext;
 using DAL.ViewModels;
 using Microsoft.Extensions.Configuration;
-using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace BAL.Repository
 {

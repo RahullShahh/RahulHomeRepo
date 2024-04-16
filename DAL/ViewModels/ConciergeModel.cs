@@ -45,7 +45,7 @@ namespace DAL.ViewModels
         public string? PatientLastName { get; set;}
 
         [Required(ErrorMessage = "Date of Birth cannot be empty")]
-        [DateNotInFutureAttribute(ErrorMessage = "Future date cannot be selected")]
+        //[DateNotInFutureAttribute(ErrorMessage = "Future date cannot be selected")]
         public DateTime? PatientDateOfBirth {  get; set; }
 
         [Required(ErrorMessage = "Email cannot be kept empty")]
@@ -59,17 +59,17 @@ namespace DAL.ViewModels
         public string? PatientRoomNo {  get; set; }
         public List<Region>? Regions { get; set; }
 
-        public class DateNotInFutureAttribute : ValidationAttribute
-        {
-            protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
-            {
-                var date = (DateTime?)value;
-                if (date > DateTime.Now)
-                {
-                    return new ValidationResult(ErrorMessage);
-                }
-                return ValidationResult.Success;
-            }
-        }
+        //public class DateNotInFutureAttribute : ValidationAttribute
+        //{
+        //    protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        //    {
+        //        var date = (DateTime?)value;
+        //        if (date > DateTime.Now)
+        //        {
+        //            return new ValidationResult(ErrorMessage);
+        //        }
+        //        return ValidationResult.Success;
+        //    }
+        //}
     }
 }

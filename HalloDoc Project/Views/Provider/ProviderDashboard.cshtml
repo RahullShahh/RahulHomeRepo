@@ -2,7 +2,6 @@
 @{
     Layout = "_ProviderDashboardLayout";
 }
-
 <div class="px-4">
 
     <div class="row mt-3">
@@ -201,26 +200,6 @@
                 </svg>
                 <span class="ms-1 d-md-block d-none text-white">Create Request</span>
             </a>
-            @* <form method="post">
-            <button type="button" id="ExportButton" class="mx-1 px-2 py-1 btn btn-primary shadow" style="background-color:#10bce9">
-            <svg width="25px" height="25px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="white"
-            class="bi bi-reply">
-            <path transform="scale(-1, 1) translate(-20,0)"
-            d="M6.598 5.013a.144.144 0 0 1 .202.134V6.3a.5.5 0 0 0 .5.5c.667 0 2.013.005 3.3.822.984.624 1.99 1.76 2.595 3.876-1.02-.983-2.185-1.516-3.205-1.799a8.74 8.74 0 0 0-1.921-.306 7.404 7.404 0 0 0-.798.008h-.013l-.005.001h-.001L7.3 9.9l-.05-.498a.5.5 0 0 0-.45.498v1.153c0 .108-.11.176-.202.134L2.614 8.254a.503.503 0 0 0-.042-.028.147.147 0 0 1 0-.252.499.499 0 0 0 .042-.028l3.984-2.933zM7.8 10.386c.068 0 .143.003.223.006.434.02 1.034.086 1.7.271 1.326.368 2.896 1.202 3.94 3.08a.5.5 0 0 0 .933-.305c-.464-3.71-1.886-5.662-3.46-6.66-1.245-.79-2.527-.942-3.336-.971v-.66a1.144 1.144 0 0 0-1.767-.96l-3.994 2.94a1.147 1.147 0 0 0 0 1.946l3.994 2.94a1.144 1.144 0 0 0 1.767-.96v-.667z" />
-            </svg>
-            <span class="ms-1 d-md-block d-none text-white">Export</span>
-            </button>
-            </form>
-            <form method="post">
-            <button type="button" id="ExportAllButton" class="mx-1 px-2 py-1 btn btn-primary shadow" style="background-color:#10bce9">
-            <svg width="25px" height="25px" viewBox="0 0 20 20" fill="white">
-            <path transform="scale(-1, 1) translate(-20,0)"
-            d="M6.598 5.013a.144.144 0 0 1 .202.134V6.3a.5.5 0 0 0 .5.5c.667 0 2.013.005 3.3.822.984.624 1.99 1.76 2.595 3.876-1.02-.983-2.185-1.516-3.205-1.799a8.74 8.74 0 0 0-1.921-.306 7.404 7.404 0 0 0-.798.008h-.013l-.005.001h-.001L7.3 9.9l-.05-.498a.5.5 0 0 0-.45.498v1.153c0 .108-.11.176-.202.134L2.614 8.254a.503.503 0 0 0-.042-.028.147.147 0 0 1 0-.252.499.499 0 0 0 .042-.028l3.984-2.933zM7.8 10.386c.068 0 .143.003.223.006.434.02 1.034.086 1.7.271 1.326.368 2.896 1.202 3.94 3.08a.5.5 0 0 0 .933-.305c-.464-3.71-1.886-5.662-3.46-6.66-1.245-.79-2.527-.942-3.336-.971v-.66a1.144 1.144 0 0 0-1.767-.96l-3.994 2.94a1.147 1.147 0 0 0 0 1.946l3.994 2.94a1.144 1.144 0 0 0 1.767-.96v-.667z" />
-            <text x="10" y="18" style="font-size: 5px;fill: white">ALL</text>
-            </svg>
-            <span class="ms-1 d-md-block d-none text-white">Export All</span>
-            </button>
-            </form> *@
         </div>
     </div>
     <div class="py-3 mt-2  shadow rounded">
@@ -292,21 +271,22 @@
 </script>
 <script>
 
-    $.ajax({
-        url: '/Provider/PartialTable',
-        type: 'POST',
-        data: { status: 1, page: 1, typeFilter: 0, searchFilter: "", regionFilter: 0 },
-        success: function (data) {
-            $("#partial").html(data);
-        },
-        error: function (error) {
-            alert('PartialTable Error');
-        }
-    });
+    // $.ajax({
+    //     url: '/Provider/NewTable',
+    //     type: 'POST',
+    //     data: { status: 1, page: 1, typeFilter: 0, searchFilter: "", regionFilter: 0 },
+    //     success: function (data) {
+    //         $("#partial").html(data);
+    //     },
+    //     error: function (error) {
+    //         alert('PartialTable Error');
+    //     }
+    // });
 
 </script>
-
-@* <script type="text/javascript">
+@* the below written script is for calling all the methods in the admin dashboard *@
+<script type="text/javascript">
+    
         $('#selectregion').change(function () {
             var regionid = $(this).val();
             if (regionid != 0) {
@@ -449,8 +429,8 @@
             });
         });
 
-    </script> *@
-@* <script>
+    </script> 
+<script>
         var pageNo = 1;
         var dashboardStatus = 0;
         var type_filter = 0;
@@ -465,32 +445,15 @@
 
         function loadPreviousPage(currentpage) {
             LoadPartialTables(currentpage - 1);
-        }
-
-        // $('#ExportButton').onclick("click", function () {
-        //     $.ajax({
-        //         url: '/Admin/ExportToExcel',
-        //         type: 'POST',
-        //         data: { dashboardStatus:dashboardStatus, page: pageNo, region: region_filter, search: search_filter, type: type_filter },
-        //         success: function (data) {
-        //             $("#partial").html(data);
-        //         },
-        //         error: function (error) {
-        //             alert('ExportError');
-        //         }
-        //     });
-        // });
+        }     
 
         $("#searchBtn").on("keydown", function (e) {
-            if (e.code === "Enter") {  //checks whether the pressed key is "Enter"
+        if (e.code === "Enter")    //checks whether the pressed key is "Enter"
+            {  
                 var searchValue = $(this).val().toLowerCase();
                 search_filter = searchValue;
                 LoadPartialTables(pageNo);
             }
-            // clearTimeout(searchTimer);
-            // searchTimer = setTimeout(function () {
-            //     LoadPartialTables(pageNo);
-            // }, 500);
         });
 
         $("#RegionFilters").change(function () {
@@ -576,7 +539,7 @@
 
             if (dashboardStatus == 1) {
                 $.ajax({
-                    url: '/Admin/NewTable',
+                    url: '/Provider/NewTable',
                     type: 'POST',
                     data: { page: pageNo, region: region_filter, search: search_filter, type: type_filter },
                     success: function (data) {
@@ -589,7 +552,7 @@
             }
             else if (dashboardStatus == 2) {
                 $.ajax({
-                    url: '/Admin/PendingTable',
+                    url: '/Provider/PendingTable',
                     type: 'POST',
                     data: { page: pageNo, region: region_filter, search: search_filter, type: type_filter },
                     success: function (data) {
@@ -602,7 +565,7 @@
             }
             else if (dashboardStatus == 3) {
                 $.ajax({
-                    url: '/Admin/ActiveTable',
+                    url: '/Provider/ActiveTable',
                     type: 'POST',
                     data: { page: pageNo, region: region_filter, search: search_filter, type: type_filter },
                     success: function (data) {
@@ -615,7 +578,7 @@
             }
             else if (dashboardStatus == 4) {
                 $.ajax({
-                    url: '/Admin/ConcludeTable',
+                    url: '/Provider/ConcludeTable',
                     type: 'POST',
                     data: { page: pageNo, region: region_filter, search: search_filter, type: type_filter },
                     success: function (data) {
@@ -623,32 +586,6 @@
                     },
                     error: function (error) {
                         alert('pending error');
-                    }
-                });
-            }
-            else if (dashboardStatus == 5) {
-                $.ajax({
-                    url: '/Admin/ToCloseTable',
-                    type: 'POST',
-                    data: { page: pageNo, region: region_filter, search: search_filter, type: type_filter },
-                    success: function (data) {
-                        $("#partial").html(data);
-                    },
-                    error: function (error) {
-                        alert('to c error');
-                    }
-                });
-            }
-            else if (dashboardStatus == 6) {
-                $.ajax({
-                    url: '/Admin/UnpaidTable',
-                    type: 'POST',
-                    data: { page: pageNo, region: region_filter, search: search_filter, type: type_filter },
-                    success: function (data) {
-                        $("#partial").html(data);
-                    },
-                    error: function (error) {
-                        alert('unpaid error');
                     }
                 });
             }
@@ -725,69 +662,7 @@
             $('.status-tab').not(this).removeClass("active");
         });
 
-    </script> *@
-<script>
-
-    $('#ExportButton').click(function () {
-
-        console.log("status : " + dashboardStatus);
-
-        $.ajax({
-            url: '/Admin/ExportToExcel',
-            type: 'POST',
-            data: { status: dashboardStatus, page: pageNo, region: region_filter, search: search_filter, type: type_filter },
-            success: function (data) {
-
-                console.log('success');
-                var link = document.createElement('a');
-
-                link.href = "data:application/octet-stream;base64," + data;
-                link.target = '_blank';
-                link.download = 'Requestdata.xlsx';
-                link.click();
-            },
-            error: function (error) {
-                alert('ExportError');
-            }
-        });
-
-    });
-    $('#ExportAllButton').click(function () {
-
-        console.log("status : " + dashboardStatus);
-
-        $.ajax({
-            url: '/Admin/ExportAllToExcel',
-            type: 'POST',
-            data: { status: dashboardStatus },
-            success: function (data) {
-                console.log('success');
-                var link = document.createElement('a');
-
-                link.href = "data:application/octet-stream;base64," + data;
-                link.target = '_blank';
-                link.download = 'AllRequestData.xlsx';
-                link.click();
-            },
-            error: function (error) {
-                alert('ExportError');
-            }
-        });
-    });
-    $('#FinalizePDF').click(function () {
-        $.ajax({
-            url: '/Admin/ExportAllToExcel',
-            type: 'POST',
-            data: { status: dashboardStatus },
-            success: function (data) {
-                console.log("success");
-            },
-            error: function (error) {
-                alert('ExportError');
-            }
-        });
-    })
-</script>
+    </script> 
 <script>
     $('.admin-tab').removeClass('active-tab');
     $('#dashboard-tab').addClass('active-tab');

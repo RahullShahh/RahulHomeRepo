@@ -19,3 +19,6 @@ body {
 .iti__country-list {
     z-index: 5;
 }
+* {
+    font-family: "Inter"
+}
